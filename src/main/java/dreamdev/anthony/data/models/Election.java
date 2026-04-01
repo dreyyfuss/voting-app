@@ -14,4 +14,5 @@ public class Election {
     private String electionName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private String electionStatus;
 }

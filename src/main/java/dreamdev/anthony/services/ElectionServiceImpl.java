@@ -1,9 +1,11 @@
 package dreamdev.anthony.services;
 
+import dreamdev.anthony.data.models.Election;
 import dreamdev.anthony.data.repositories.ElectionRepository;
 import dreamdev.anthony.dtos.requests.CreateElectionRequest;
 import dreamdev.anthony.dtos.requests.UpdateElectionRequest;
 import dreamdev.anthony.dtos.responses.ElectionResponse;
+import dreamdev.anthony.utils.Mapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,8 @@ public class ElectionServiceImpl implements ElectionService {
 
     @Override
     public ElectionResponse createElection(CreateElectionRequest request) {
-//        electionRepository.save();
+        Election savedElection = electionRepository.save(Mapper.toElection(request));
+        return Mapper.toElectionResponse(savedElection);
     }
 
     @Override
