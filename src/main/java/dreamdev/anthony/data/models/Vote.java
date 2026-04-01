@@ -8,12 +8,11 @@ import java.time.LocalDateTime;
 
 @Data
 @Document
-public class User {
+public class Vote {
     @Id
     private String id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
-    private boolean isAdmin;
+    private String voterId;
+    private String candidateId;
+    private String electionId;
+    private LocalDateTime castedAt;
 }
