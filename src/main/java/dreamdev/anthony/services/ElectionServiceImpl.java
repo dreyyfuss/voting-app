@@ -8,6 +8,8 @@ import dreamdev.anthony.dtos.responses.ElectionResponse;
 import dreamdev.anthony.exceptions.EntityNotFoundException;
 import dreamdev.anthony.utils.Mapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,10 +45,12 @@ public class ElectionServiceImpl implements ElectionService {
 
     @Override
     public Page<ElectionResponse> getAllElections(int page, int size, String sortBy) {
-        return electionRepository.findAll();
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        return electionRepository.findAll(pageRequest).map(Mapper::toElectionResponse);
     }
 
     @Override
     public void deleteElection(String id) {
+        electionRepository.deleteById(id);
     }
 }
