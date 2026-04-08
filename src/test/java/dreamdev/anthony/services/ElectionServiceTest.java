@@ -4,6 +4,7 @@ import dreamdev.anthony.data.models.Election;
 import dreamdev.anthony.data.repositories.ElectionRepository;
 import dreamdev.anthony.dtos.requests.CreateElectionRequest;
 import dreamdev.anthony.dtos.responses.ElectionResponse;
+import dreamdev.anthony.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,5 +57,24 @@ class ElectionServiceTest {
         assertNotNull(response);
         assertEquals("Presidential Election", response.getElectionName());
         verify(electionRepository, times(1)).save(any(Election.class));
+    }
+
+    @Test
+    void getElectionById_shouldReturnElectionResponse_whenIdExists() {
+        when(electionRepository.findById("randomstringid")).thenReturn(Optional.of(election));
+
+        ElectionResponse response = electionService.getElectionById("randomstringid");
+
+        assertNotNull(response);
+        assertEquals("randomstringid", response.getId());
+        assertEquals("Presidential Election", response.getElectionName());
+        verify(electionRepository, times(1)).findById("randomstringid");
+    }
+
+    @Test
+    void getElectionById_shouldThrowException_whenIdDoesNotExist() {
+        when(electionRepository.findById("wrongId")).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> electionService.getElectionById("wrongId"));
+        verify(electionRepository, times(1)).findById("wrongId");
     }
 }
