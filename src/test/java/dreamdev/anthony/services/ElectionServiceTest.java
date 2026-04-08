@@ -12,8 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,5 +102,21 @@ class ElectionServiceTest {
         when(electionRepository.findById("wrongId")).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> electionService.updateElection("wrongId", updateElectionRequest));
         verify(electionRepository, never()).save(any(Election.class));
+    }
+
+    @Test
+    void getAllElections_shouldReturnPageOfElectionResponses() {
+        Page<Election> electionPage = new PageImpl<>(List.of(election));
+        when(electionRepository.findAll(any(PageRequest.class))).thenReturn(electionPage);
+        Page<ElectionResponse> response = electionService.getAllElections(0, 10, "electionName");
+        assertNotNull(response);
+        assertEquals(1, response.getContent().size());
+        assertEquals("Presidential Election", response.getContent().get(0).getElectionName());
+    }
+
+    @Test
+    void deleteElection_shouldCallDeleteById() {
+        electionService.deleteElection("randomstringid");
+        verify(electionRepository, times(1)).deleteById("randomstringid");
     }
 }
